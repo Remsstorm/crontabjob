@@ -1,0 +1,27 @@
+---
+- hosts: all
+
+  become: yes
+  become_user: root
+  tasks:
+    - name: remove log 
+      shell: find /var/log/ -type f -mtime +7 -exec rm {} +
+    - name:  delete all gz 
+      shell: find /var/log -type f -regex ".*\.gz$"
+    - name: with regex    
+      shell: find /var/log -type f -regex ".*\.[0-9]$"  
+    - name: suricata log
+      shell: find /var/log/suricata/fast.log -type f -regex ".*\.log$"
+    - name: mitigations cbc 
+      shell: touch fast.log
+    - name: create new filer fastlog
+      lineinfile:
+        path: /var/log/suricata
+        line: fast.log
+    - name: restart suricata
+      shell: systemctl restart suricata    
+    - name: verfify error
+      shell: echo $?  
+      register: result
+    - debug:
+        msg: "{{result.stdout}}"

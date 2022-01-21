@@ -1,0 +1,27 @@
+##########INSERT IN CRONTAB  remove all type filer at sunday of mounth in 8h05 A:M 
+---
+
+- hosts: localhost
+  become: yes
+  become_user: root
+  tasks:
+    - name: crontab
+      shell: echo  '5 8 * 1-12 0 root find /var/log/ -type f -iname '*.log*'-exec rm {} \;'
+    - name: add job
+      lineinfile:
+        path: /etc/crontab 
+        line : 5 8 * 1-12 0 root find /var/log/ -type f -iname '*.log*'-exec rm {} \;
+    - name: crontab
+      shell: echo  '5 8 * 1-12 0 root find /var/log/suricata -type f -iname '*.fast.log*'-exec rm {} \;'
+    - name: add job
+      lineinfile:
+        path: /etc/crontab 
+        line : 5 8 * 1-12 0 root find /var/log/suricata -type f -iname '*.fast.log*'-exec rm {} \;    
+    - name: verfify error
+      shell: echo $?  
+      register: result
+    - debug:
+        msg: "{{result.stdout}}"
+
+ 
+    
